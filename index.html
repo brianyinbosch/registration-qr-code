@@ -5,11 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Training QR Generator</title>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 2rem; }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
-    select, input { width: 100%; padding: 0.5rem; margin-top: 0.5rem; }
-    img { margin-top: 1.5rem; width: 300px; height: 300px; }
-    #output-link { word-break: break-all; margin-top: 1rem; }
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    select, input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    img {
+      margin-top: 1.5rem;
+      width: 300px;
+      height: 300px;
+    }
+    #output-link {
+      word-break: break-all;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -27,31 +47,40 @@
     <option value="">Select a trainer</option>
   </select>
 
-  <label for="date">Date and Time</label>
-  <input type="datetime-local" id="date"/>
+  <label for="date">Training Date</label>
+  <input type="date" id="date"/>
 
-  <label for="location">Location</label>
-  <input type="text" id="location" placeholder="City, State" />
+  <label for="time">Class Time (AM/PM)</label>
+  <select id="time">
+    <option value="">Select time</option>
+    <option value="AM">AM</option>
+    <option value="PM">PM</option>
+  </select>
+
+  <label for="city">City</label>
+  <input type="text" id="city" placeholder="e.g., Watertown" />
+
+  <label for="state">State</label>
+  <input type="text" id="state" placeholder="e.g., Massachusetts" />
 
   <div id="output-link"></div>
   <img id="qr-code" alt="QR Code" />
 
   <script>
-    // Trainer data
     const trainers = {
       "Bosch Home Comfort": ["Dave Feyock", "Sean Looby"],
       "Gunder Associates": ["Paul Thieberger", "Ryan Czir"]
     };
 
-    // Elements
     const companyEl = document.getElementById("company");
     const trainerEl = document.getElementById("trainer");
     const dateEl = document.getElementById("date");
-    const locationEl = document.getElementById("location");
+    const cityEl = document.getElementById("city");
+    const stateEl = document.getElementById("state");
+    const timeEl = document.getElementById("time");
     const qrImg = document.getElementById("qr-code");
     const outputLink = document.getElementById("output-link");
 
-    // Update trainer list
     companyEl.addEventListener("change", () => {
       trainerEl.innerHTML = '<option value="">Select a trainer</option>';
       const selectedCompany = companyEl.value;
@@ -66,25 +95,35 @@
       updateOutput();
     });
 
-    // Update on change
-    [trainerEl, dateEl, locationEl].forEach(el => el.addEventListener("input", updateOutput));
+    [trainerEl, dateEl, cityEl, stateEl, timeEl].forEach(el =>
+      el.addEventListener("input", updateOutput)
+    );
 
     function updateOutput() {
-      const provider = encodeURIComponent(companyEl.value);
-      const trainer = encodeURIComponent(trainerEl.value);
-      const datetime = encodeURIComponent(dateEl.value);
-      const location = encodeURIComponent(locationEl.value);
+      const provider = companyEl.value;
+      const trainer = trainerEl.value;
+      const city = cityEl.value.trim();
+      const state = stateEl.value.trim();
+      const time = timeEl.value;
 
-      if (!provider || !trainer || !datetime || !location) {
+      // Don't proceed if required fields are missing
+      if (!provider || !trainer || !city || !state || !time) {
         qrImg.src = "";
         outputLink.textContent = "";
         return;
       }
 
-      const jotformURL = `https://www.boschheatingcooling.com/trf/?provider=${provider}%26trainer=${trainer}%26trainingDate=${datetime}%26trainingLocation=${location}`;
-      const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(jotformURL)}&size=300`;
+      // Fixed product and level
+      const product = "IDS-IDP";
+      const lvl = "300";
 
-      outputLink.innerHTML = `<strong>URL:</strong> <br><a href="${jotformURL}" target="_blank">${jotformURL}</a>`;
+      const baseUrl = "https://www.boschheatingcooling.com/trf/";
+      const params = `?provider=${encodeURIComponent(provider)}%26trainer=${encodeURIComponent(trainer)}%26trainingCity=${encodeURIComponent(city)}%26trainingState=${encodeURIComponent(state)}%26product=${product}%26lvl=${lvl}%26classTime=${time}`;
+
+      const fullURL = baseUrl + params;
+      const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(fullURL)}&size=300`;
+
+      outputLink.innerHTML = `<strong>Prefilled URL:</strong><br><a href="${fullURL}" target="_blank">${fullURL}</a>`;
       qrImg.src = qrURL;
     }
   </script>
