@@ -145,7 +145,7 @@
       }
 
       const baseUrl = "https://www.boschheatingcooling.com/trf/";
-      const params = `?provider=${encodeURIComponent(provider)}%26trainer=${encodeURIComponent(trainer)}%26trainingCity=${encodeURIComponent(city)}%26trainingState=${encodeURIComponent(state)}%26product=${encodeURIComponent(product)}%26lvl=${encodeURIComponent(lvl)}%26classTime=${time}`;
+      const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
       const fullURL = baseUrl + params;
       const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(fullURL)}&size=300`;
 
