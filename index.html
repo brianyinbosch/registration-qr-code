@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Training QR Generator</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 2rem; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    select, input { width: 100%; padding: 0.5rem; margin-top: 0.5rem; }
+    img { margin-top: 1.5rem; width: 300px; height: 300px; }
+    #output-link { word-break: break-all; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h2>Training QR Code Generator</h2>
+
+  <label for="company">Training Company</label>
+  <select id="company">
+    <option value="">Select a company</option>
+    <option value="Bosch Home Comfort">Bosch Home Comfort</option>
+    <option value="Gunder Associates">Gunder Associates</option>
+  </select>
+
+  <label for="trainer">Trainer Name</label>
+  <select id="trainer">
+    <option value="">Select a trainer</option>
+  </select>
+
+  <label for="date">Date and Time</label>
+  <input type="datetime-local" id="date"/>
+
+  <label for="location">Location</label>
+  <input type="text" id="location" placeholder="City, State" />
+
+  <div id="output-link"></div>
+  <img id="qr-code" alt="QR Code" />
+
+  <script>
+    // Trainer data
+    const trainers = {
+      "Bosch Home Comfort": ["Dave Feyock", "Sean Looby"],
+      "Gunder Associates": ["Paul Thieberger", "Ryan Czir"]
+    };
+
+    // Elements
+    const companyEl = document.getElementById("company");
+    const trainerEl = document.getElementById("trainer");
+    const dateEl = document.getElementById("date");
+    const locationEl = document.getElementById("location");
+    const qrImg = document.getElementById("qr-code");
+    const outputLink = document.getElementById("output-link");
+
+    // Update trainer list
+    companyEl.addEventListener("change", () => {
+      trainerEl.innerHTML = '<option value="">Select a trainer</option>';
+      const selectedCompany = companyEl.value;
+      if (selectedCompany && trainers[selectedCompany]) {
+        trainers[selectedCompany].forEach(name => {
+          const option = document.createElement("option");
+          option.value = name;
+          option.textContent = name;
+          trainerEl.appendChild(option);
+        });
+      }
+      updateOutput();
+    });
+
+    // Update on change
+    [trainerEl, dateEl, locationEl].forEach(el => el.addEventListener("input", updateOutput));
+
+    function updateOutput() {
+      const provider = encodeURIComponent(companyEl.value);
+      const trainer = encodeURIComponent(trainerEl.value);
+      const datetime = encodeURIComponent(dateEl.value);
+      const location = encodeURIComponent(locationEl.value);
+
+      if (!provider || !trainer || !datetime || !location) {
+        qrImg.src = "";
+        outputLink.textContent = "";
+        return;
+      }
+
+      const jotformURL = `https://www.boschheatingcooling.com/trf/?provider=${provider}%26trainer=${trainer}%26trainingDate=${datetime}%26trainingLocation=${location}`;
+      const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(jotformURL)}&size=300`;
+
+      outputLink.innerHTML = `<strong>URL:</strong> <br><a href="${jotformURL}" target="_blank">${jotformURL}</a>`;
+      qrImg.src = qrURL;
+    }
+  </script>
+</body>
+</html>
