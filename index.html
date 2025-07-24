@@ -27,19 +27,16 @@
       height: 300px;
     }
     #output-link {
-      word-break: break-all;
+      word-break: break-word;
       margin-top: 1rem;
     }
   </style>
 </head>
-<body>
-  <h2>Training QR Code Generator</h2>
+<body Code Generator</h2>
 
   <label for="company">Training Company</label>
   <select id="company">
     <option value="">Select a company</option>
-    <option value="Bosch Home Comfort">Bosch Home Comfort</option>
-    <option value="Gunder Associates">Gunder Associates</option>
   </select>
 
   <label for="trainer">Trainer Name</label>
@@ -94,100 +91,99 @@
   <div id="output-link"></div>
   <img id="qr-code" alt="QR Code" />
 
-  <script>
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
 
-const firebaseConfig = {
-   apiKey: "AIzaSyDQ5H1jO6XPDvIN5CoIvlFFta2lPGE4WIk",
-  authDomain: "training-qr-code.firebaseapp.com",
-  projectId: "training-qr-code",
-  storageBucket: "training-qr-code.firebasestorage.app",
-  messagingSenderId: "79832187763",
-  appId: "1:79832187763:web:86050298cbd1262faf3b06"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQ5H1jO6XPDvIN5CoIvlFFta2lPGE4WIk",
+      authDomain: "training-qr-code.firebaseapp.com",
+      projectId: "training-qr-code",
+      storageBucket: "training-qr-code.firebasestorage.app",
+      messagingSenderId: "79832187763",
+      appId: "1:79832187763:web:86050298cbd1262faf3b06"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-const companyEl = document.getElementById("company");
-const trainerEl = document.getElementById("trainer");
-const dateEl = document.getElementById("date");
-const cityEl = document.getElementById("city");
-const stateEl = document.getElementById("state");
-const timeEl = document.getElementById("time");
-const levelEl = document.getElementById("level");
-const productEl = document.getElementById("product");
-const qrImg = document.getElementById("qr-code");
-const outputLink = document.getElementById("output-link");
+    const companyEl = document.getElementById("company");
+    const trainerEl = document.getElementById("trainer");
+    const dateEl = document.getElementById("date");
+    const cityEl = document.getElementById("city");
+    const stateEl = document.getElementById("state");
+    const timeEl = document.getElementById("time");
+    const levelEl = document.getElementById("level");
+    const productEl = document.getElementById("product");
+    const qrImg = document.getElementById("qr-code");
+    const outputLink = document.getElementById("output-link");
 
-let companiesCache = {};
+    let companiesCache = {};
 
-async function loadCompanies() {
-  const companySnapshot = await getDocs(collection(db, "companies"));
-  companyEl.innerHTML = '<option value="">Select a company</option>';
-  companiesCache = {};
-  companySnapshot.forEach(doc => {
-    const data = doc.data();
-    companiesCache[doc.id] = data.name;
-    const option = document.createElement("option");
-    option.value = doc.id;
-    option.textContent = data.name;
-    companyEl.appendChild(option);
-  });
-}
+    async function loadCompanies() {
+      const companySnapshot = await getDocs(collection(db, "companies"));
+      companyEl.innerHTML = '<option value="">Select a company</option>';
+      companiesCache = {};
+      companySnapshot.forEach(doc => {
+        const data = doc.data();
+        companiesCache[doc.id] = data.name;
+        const option = document.createElement("option");
+        option.value = doc.id;
+        option.textContent = data.name;
+        companyEl.appendChild(option);
+      });
+    }
 
-companyEl.addEventListener("change", async () => {
-  trainerEl.innerHTML = '<option value="">Select a trainer</option>';
-  const selectedCompanyId = companyEl.value;
-  if (!selectedCompanyId) return;
+    companyEl.addEventListener("change", async () => {
+      trainerEl.innerHTML = '<option value="">Select a trainer</option>';
+      const selectedCompanyId = companyEl.value;
+      if (!selectedCompanyId) return;
 
-  const q = query(collection(db, "trainers"), where("companyId", "==", selectedCompanyId));
-  const trainerSnapshot = await getDocs(q);
+      const q = query(collection(db, "trainers"), where("companyId", "==", selectedCompanyId));
+      const trainerSnapshot = await getDocs(q);
 
-  trainerSnapshot.forEach(doc => {
-    const data = doc.data();
-    const option = document.createElement("option");
-    option.value = data.name;
-    option.textContent = data.name;
-    trainerEl.appendChild(option);
-  });
+      trainerSnapshot.forEach(doc => {
+        const data = doc.data();
+        const option = document.createElement("option");
+        option.value = data.name;
+        option.textContent = data.name;
+        trainerEl.appendChild(option);
+      });
 
-  updateOutput();
-});
+      updateOutput();
+    });
 
-[trainerEl, dateEl, cityEl, stateEl, timeEl, levelEl, productEl].forEach(el =>
-  el.addEventListener("input", updateOutput)
-);
+    [trainerEl, dateEl, cityEl, stateEl, timeEl, levelEl, productEl].forEach(el =>
+      el.addEventListener("input", updateOutput)
+    );
 
-function updateOutput() {
-  const providerId = companyEl.value;
-  const provider = companiesCache[providerId] || "";
-  const trainer = trainerEl.value;
-  const city = cityEl.value.trim();
-  const state = stateEl.value.trim();
-  const time = timeEl.value;
-  const lvl = levelEl.value;
-  const product = productEl.value;
+    function updateOutput() {
+      const providerId = companyEl.value;
+      const provider = companiesCache[providerId] || "";
+      const trainer = trainerEl.value;
+      const city = cityEl.value.trim();
+      const state = stateEl.value.trim();
+      const time = timeEl.value;
+      const lvl = levelEl.value;
+      const product = productEl.value;
 
-  if (!provider || !trainer || !city || !state || !time || !lvl || !product) {
-    qrImg.src = "";
-    outputLink.textContent = "";
-    return;
-  }
+      if (!provider || !trainer || !city || !state || !time || !lvl || !product) {
+        qrImg.src = "";
+        outputLink.textContent = "";
+        return;
+      }
 
-  const baseUrl = "https://www.boschheatingcooling.com/trf/";
-  const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
-  const fullURL = baseUrl + params;
-  const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(fullURL)}&size=300`;
+      const baseUrl = "https://www.boschheatingcooling.com/trf/";
+      const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
+      const fullURL = baseUrl + params;
+      const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(fullURL)}&size=300`;
 
-  outputLink.innerHTML = `<strong>Prefilled URL:</strong><br><a href="${fullURL}" target="_blank">${fullURL}</a>`;
-  qrImg.src = qrURL;
-}
+      outputLink.innerHTML = `<strong>Prefilled URL:</strong><br><a href="${fullURL}" target="_blank">${fullURL}</a>`;
+      qrImg.src = qrURL;
+    }
 
-// On page load
-loadCompanies();
-
+    // Load companies on page load
+    loadCompanies();
   </script>
 </body>
 </html>
