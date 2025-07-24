@@ -2,174 +2,187 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Training Form</title>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Training QR Generator</title>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-    label, select, input { display: block; margin: 10px 0; width: 100%; padding: 8px; }
-    button { margin-top: 20px; padding: 10px; width: 100%; font-size: 16px; }
-    img { margin-top: 20px; width: 100%; max-width: 300px; display: block; margin-left: auto; margin-right: auto; }
-    #linkOutput { word-break: break-word; margin-top: 20px; }
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    select, input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    img {
+      margin-top: 1.5rem;
+      width: 300px;
+      height: 300px;
+    }
+    #output-link {
+      word-break: break-all;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
+  <h2>Training QR Code Generator</h2>
 
-  <label for="company">Training Company:</label>
-  <select id="company"></select>
+  <label for="company">Training Company</label>
+  <select id="company">
+    <option value="">Select a company</option>
+    <option value="Bosch Home Comfort">Bosch Home Comfort</option>
+    <option value="Gunder Associates">Gunder Associates</option>
+  </select>
 
-  <label for="trainer">Trainer:</label>
-  <select id="trainer"></select>
+  <label for="trainer">Trainer Name</label>
+  <select id="trainer">
+    <option value="">Select a trainer</option>
+  </select>
 
-  <label for="product">Product:</label>
-  <select id="product"></select>
+  <label for="date">Training Date</label>
+  <input type="date" id="date"/>
 
-  <label for="courseLevel">Course Level:</label>
-  <select id="courseLevel"></select>
-
-  <label for="trainingDate">Date:</label>
-  <input id="trainingDate" type="date" />
-
-  <label for="classTime">AM / PM:</label>
-  <select id="classTime">
+  <label for="time">Class Time (AM/PM)</label>
+  <select id="time">
+    <option value="">Select time</option>
     <option value="AM">AM</option>
     <option value="PM">PM</option>
   </select>
 
-  <label for="locationCity">City:</label>
-  <input id="locationCity" type="text" placeholder="Enter city" />
+  <label for="city">City</label>
+  <input type="text" id="city" placeholder="e.g., Watertown" />
 
-  <label for="locationState">State:</label>
-  <select id="locationState"></select>
+  <label for="state">State</label>
+  <input type="text" id="state" placeholder="e.g., Massachusetts" />
 
-  <button onclick="generateLink()">Generate Link & QR Code</button>
+  <label for="level">Course Level</label>
+  <select id="level">
+    <option value="">Select level</option>
+    <option value="100">100 - Introduction</option>
+    <option value="200">200 - Intermediate</option>
+    <option value="300">300 - Advanced</option>
+    <option value="300-NATE">300-NATE - Advanced</option>
+    <option value="400">400 - Expert</option>
+    <option value="500">500 - Master</option>
+  </select>
 
-  <div id="linkOutput"></div>
-  <img id="qrCode" src="" alt="QR Code" style="display: none;"/>
+  <label for="product">Course Name</label>
+  <select id="product">
+    <option value="">Select course</option>
+    <option value="IDS-IDP">IDS-IDP</option>
+    <option value="IDS">IDS</option>
+    <option value="IDS Ultra">IDS Ultra</option>
+    <option value="IDP">IDP</option>
+    <option value="Mini-Split">Mini-Split</option>
+    <option value="WSHP">WSHP</option>
+    <option value="Boilers">Boilers</option>
+    <option value="Water Heaters">Water Heaters</option>
+    <option value="A2L Refrigerants">A2L Refrigerants</option>
+    <option value="Technology-CCHP">Technology-CCHP</option>
+    <option value="Technology-Inverter">Technology-Inverter</option>
+    <option value="Johnstone Roadshow">Johnstone Roadshow</option>
+  </select>
+
+  <div id="output-link"></div>
+  <img id="qr-code" alt="QR Code" />
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDQ5H1jO6XPDvIN5CoIvlFFta2lPGE4WIk",
-      authDomain: "training-qr-code.firebaseapp.com",
-      projectId: "training-qr-code",
-      storageBucket: "training-qr-code.firebasestorage.app",
-      messagingSenderId: "79832187763",
-      appId: "1:79832187763:web:86050298cbd1262faf3b06"
-    };
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+const firebaseConfig = {
+  // your config here
+};
 
-    const companySelect = document.getElementById('company');
-    const trainerSelect = document.getElementById('trainer');
-    const productSelect = document.getElementById('product');
-    const courseLevelSelect = document.getElementById('courseLevel');
-    const locationStateSelect = document.getElementById('locationState');
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    const stateOptions = [
-      "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia",
-      "Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland",
-      "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada",
-      "New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma",
-      "Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah",
-      "Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"
-    ];
+const companyEl = document.getElementById("company");
+const trainerEl = document.getElementById("trainer");
+const dateEl = document.getElementById("date");
+const cityEl = document.getElementById("city");
+const stateEl = document.getElementById("state");
+const timeEl = document.getElementById("time");
+const levelEl = document.getElementById("level");
+const productEl = document.getElementById("product");
+const qrImg = document.getElementById("qr-code");
+const outputLink = document.getElementById("output-link");
 
-    stateOptions.forEach(state => {
-      const option = document.createElement('option');
-      option.value = state;
-      option.textContent = state;
-      locationStateSelect.appendChild(option);
-    });
+let companiesCache = {};
 
-    let trainersByCompany = {};
+async function loadCompanies() {
+  const companySnapshot = await getDocs(collection(db, "companies"));
+  companyEl.innerHTML = '<option value="">Select a company</option>';
+  companiesCache = {};
+  companySnapshot.forEach(doc => {
+    const data = doc.data();
+    companiesCache[doc.id] = data.name;
+    const option = document.createElement("option");
+    option.value = doc.id;
+    option.textContent = data.name;
+    companyEl.appendChild(option);
+  });
+}
 
-    db.collection('companies').get().then(snapshot => {
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const option = document.createElement('option');
-        option.value = doc.id;
-        option.textContent = data.name;
-        companySelect.appendChild(option);
-      });
-      loadTrainers();
-    });
+companyEl.addEventListener("change", async () => {
+  trainerEl.innerHTML = '<option value="">Select a trainer</option>';
+  const selectedCompanyId = companyEl.value;
+  if (!selectedCompanyId) return;
 
-    function loadTrainers() {
-      db.collection('trainers').get().then(snapshot => {
-        trainersByCompany = {};
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          if (!trainersByCompany[data.companyId]) {
-            trainersByCompany[data.companyId] = [];
-          }
-          trainersByCompany[data.companyId].push({id: doc.id, name: data.name});
-        });
-        updateTrainers();
-      });
-    }
+  const q = query(collection(db, "trainers"), where("companyId", "==", selectedCompanyId));
+  const trainerSnapshot = await getDocs(q);
 
-    companySelect.addEventListener('change', updateTrainers);
+  trainerSnapshot.forEach(doc => {
+    const data = doc.data();
+    const option = document.createElement("option");
+    option.value = data.name;
+    option.textContent = data.name;
+    trainerEl.appendChild(option);
+  });
 
-    function updateTrainers() {
-      const selectedCompany = companySelect.value;
-      const trainers = trainersByCompany[selectedCompany] || [];
-      trainerSelect.innerHTML = '';
-      trainers.forEach(trainer => {
-        const option = document.createElement('option');
-        option.value = trainer.id;
-        option.textContent = trainer.name;
-        trainerSelect.appendChild(option);
-      });
-    }
+  updateOutput();
+});
 
-    db.collection('products').get().then(snapshot => {
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const option = document.createElement('option');
-        option.value = data.name;
-        option.textContent = data.name;
-        productSelect.appendChild(option);
-      });
-    });
+[trainerEl, dateEl, cityEl, stateEl, timeEl, levelEl, productEl].forEach(el =>
+  el.addEventListener("input", updateOutput)
+);
 
-    db.collection('courseLevels').orderBy('name').get().then(snapshot => {
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const option = document.createElement('option');
-        option.value = data.name;
-        option.textContent = data.name;
-        courseLevelSelect.appendChild(option);
-      });
-    });
+function updateOutput() {
+  const providerId = companyEl.value;
+  const provider = companiesCache[providerId] || "";
+  const trainer = trainerEl.value;
+  const city = cityEl.value.trim();
+  const state = stateEl.value.trim();
+  const time = timeEl.value;
+  const lvl = levelEl.value;
+  const product = productEl.value;
 
-    function generateLink() {
-      const companyName = companySelect.options[companySelect.selectedIndex].text;
-      const trainerName = trainerSelect.options[trainerSelect.selectedIndex].text;
-      const product = productSelect.value;
-      const courseLevel = courseLevelSelect.value;
-      const date = document.getElementById('trainingDate').value;
-      const classTime = document.getElementById('classTime').value;
-      const city = document.getElementById('locationCity').value;
-      const state = document.getElementById('locationState').value;
+  if (!provider || !trainer || !city || !state || !time || !lvl || !product) {
+    qrImg.src = "";
+    outputLink.textContent = "";
+    return;
+  }
 
-      const baseURL = "https://www.boschheatingcooling.com/trf/";
-      const params = new URLSearchParams({
-        provider: companyName,
-        trainer: trainerName,
-        trainingCity: city,
-        trainingState: state,
-        product: product,
-        lvl: courseLevel,
-        classTime: classTime
-      });
+  const baseUrl = "https://www.boschheatingcooling.com/trf/";
+  const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
+  const fullURL = baseUrl + params;
+  const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(fullURL)}&size=300`;
 
-      const finalURL = `${baseURL}?${params.toString().replace(/&/g, "%26")}`;
+  outputLink.innerHTML = `<strong>Prefilled URL:</strong><br><a href="${fullURL}" target="_blank">${fullURL}</a>`;
+  qrImg.src = qrURL;
+}
 
-      document.getElementById('linkOutput').innerHTML = `<strong>Link:</strong><br><a href="${finalURL}" target="_blank">${finalURL}</a>`;
-      document.getElementById('qrCode').src = `https://quickchart.io/qr?text=${encodeURIComponent(finalURL)}&size=300`;
-      document.getElementById('qrCode').style.display = 'block';
-    }
+// On page load
+loadCompanies();
+
   </script>
 </body>
 </html>
