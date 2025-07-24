@@ -139,7 +139,7 @@
       const selectedCompanyId = companyEl.value;
       if (!selectedCompanyId) return;
 
-      const q = query(collection(db, "trainers"), where("companyId", "==", selectedCompanyId));
+      const q = query(collection(db, "trainers"), where("company", "==", selectedCompanyId));
       const trainerSnapshot = await getDocs(q);
 
       trainerSnapshot.forEach(doc => {
