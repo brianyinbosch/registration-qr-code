@@ -2,156 +2,130 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Training QR Generator</title>
+  <title>Training Form</title>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      max-width: 600px;
-      margin: auto;
-      padding: 2rem;
-    }
-    label {
+    label, select, input {
       display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    select, input {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    img {
-      margin-top: 1.5rem;
-      width: 300px;
-      height: 300px;
-    }
-    #output-link {
-      word-break: break-all;
-      margin-top: 1rem;
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
-  <h2>Training QR Code Generator</h2>
 
-  <label for="company">Training Company</label>
-  <select id="company">
-    <option value="">Select a company</option>
-    <option value="Bosch Home Comfort">Bosch Home Comfort</option>
-    <option value="Gunder Associates">Gunder Associates</option>
-  </select>
+  <label for="company">Training Company:</label>
+  <select id="company"></select>
 
-  <label for="trainer">Trainer Name</label>
-  <select id="trainer">
-    <option value="">Select a trainer</option>
-  </select>
+  <label for="trainer">Trainer:</label>
+  <select id="trainer"></select>
 
-  <label for="date">Training Date</label>
-  <input type="date" id="date"/>
+  <label for="product">Product:</label>
+  <select id="product"></select>
 
-  <label for="time">Class Time (AM/PM)</label>
-  <select id="time">
-    <option value="">Select time</option>
+  <label for="courseLevel">Course Level:</label>
+  <select id="courseLevel"></select>
+
+  <label for="trainingDate">Date:</label>
+  <input id="trainingDate" type="date" />
+
+  <label for="classTime">AM / PM:</label>
+  <select id="classTime">
     <option value="AM">AM</option>
     <option value="PM">PM</option>
   </select>
 
-  <label for="city">City</label>
-  <input type="text" id="city" placeholder="e.g., Watertown" />
-
-  <label for="state">State</label>
-  <input type="text" id="state" placeholder="e.g., Massachusetts" />
-
-  <label for="level">Course Level</label>
-  <select id="level">
-    <option value="">Select level</option>
-    <option value="100">100 - Introduction</option>
-    <option value="200">200 - Intermediate</option>
-    <option value="300">300 - Advanced</option>
-    <option value="300-NATE">300-NATE - Advanced</option>
-    <option value="400">400 - Expert</option>
-    <option value="500">500 - Master</option>
-  </select>
-
-  <label for="product">Course Name</label>
-  <select id="product">
-    <option value="">Select course</option>
-    <option value="IDS-IDP">IDS-IDP</option>
-    <option value="IDS">IDS</option>
-    <option value="IDS Ultra">IDS Ultra</option>
-    <option value="IDP">IDP</option>
-    <option value="Mini-Split">Mini-Split</option>
-    <option value="WSHP">WSHP</option>
-    <option value="Boilers">Boilers</option>
-    <option value="Water Heaters">Water Heaters</option>
-    <option value="A2L Refrigerants">A2L Refrigerants</option>
-    <option value="Technology-CCHP">Technology-CCHP</option>
-    <option value="Technology-Inverter">Technology-Inverter</option>
-    <option value="Johnstone Roadshow">Johnstone Roadshow</option>
-  </select>
-
-  <div id="output-link"></div>
-  <img id="qr-code" alt="QR Code" />
+  <label for="location">Location:</label>
+  <input id="location" type="text" placeholder="Enter location" />
 
   <script>
-    const trainers = {
-      "Bosch Home Comfort": ["Dave Feyock", "Sean Looby"],
-      "Gunder Associates": ["Paul Thieberger", "Ryan Czir"]
+    // Firebase config (replace with your config)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "your-app.firebaseapp.com",
+      projectId: "your-app-id",
+      storageBucket: "your-app.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
     };
 
-    const companyEl = document.getElementById("company");
-    const trainerEl = document.getElementById("trainer");
-    const dateEl = document.getElementById("date");
-    const cityEl = document.getElementById("city");
-    const stateEl = document.getElementById("state");
-    const timeEl = document.getElementById("time");
-    const levelEl = document.getElementById("level");
-    const productEl = document.getElementById("product");
-    const qrImg = document.getElementById("qr-code");
-    const outputLink = document.getElementById("output-link");
+    // Init Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    companyEl.addEventListener("change", () => {
-      trainerEl.innerHTML = '<option value="">Select a trainer</option>';
-      const selectedCompany = companyEl.value;
-      if (selectedCompany && trainers[selectedCompany]) {
-        trainers[selectedCompany].forEach(name => {
-          const option = document.createElement("option");
-          option.value = name;
-          option.textContent = name;
-          trainerEl.appendChild(option);
-        });
-      }
-      updateOutput();
+    // DOM references
+    const companySelect = document.getElementById('company');
+    const trainerSelect = document.getElementById('trainer');
+    const productSelect = document.getElementById('product');
+    const courseLevelSelect = document.getElementById('courseLevel');
+
+    let trainersByCompany = {};
+
+    // Load Companies
+    db.collection('companies').get().then(snapshot => {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = data.name;
+        companySelect.appendChild(option);
+      });
+      // Load trainers after companies loaded
+      loadTrainers();
     });
 
-    [trainerEl, dateEl, cityEl, stateEl, timeEl, levelEl, productEl].forEach(el =>
-      el.addEventListener("input", updateOutput)
-    );
-
-    function updateOutput() {
-      const provider = companyEl.value;
-      const trainer = trainerEl.value;
-      const city = cityEl.value.trim();
-      const state = stateEl.value.trim();
-      const time = timeEl.value;
-      const lvl = levelEl.value;
-      const product = productEl.value;
-
-      if (!provider || !trainer || !city || !state || !time || !lvl || !product) {
-        qrImg.src = "";
-        outputLink.textContent = "";
-        return;
-      }
-
-      const baseUrl = "https://www.boschheatingcooling.com/trf/";
-      const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
-      const fullURL = baseUrl + params;
-      const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(fullURL)}&size=300`;
-
-      outputLink.innerHTML = `<strong>Prefilled URL:</strong><br><a href="${fullURL}" target="_blank">${fullURL}</a>`;
-      qrImg.src = qrURL;
+    // Load Trainers and group by companyId
+    function loadTrainers() {
+      db.collection('trainers').get().then(snapshot => {
+        trainersByCompany = {};
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (!trainersByCompany[data.companyId]) {
+            trainersByCompany[data.companyId] = [];
+          }
+          trainersByCompany[data.companyId].push({id: doc.id, name: data.name});
+        });
+        updateTrainers();
+      });
     }
+
+    // When company changes, update trainers dropdown
+    companySelect.addEventListener('change', updateTrainers);
+
+    function updateTrainers() {
+      const selectedCompany = companySelect.value;
+      const trainers = trainersByCompany[selectedCompany] || [];
+      trainerSelect.innerHTML = '';
+      trainers.forEach(trainer => {
+        const option = document.createElement('option');
+        option.value = trainer.id;
+        option.textContent = trainer.name;
+        trainerSelect.appendChild(option);
+      });
+    }
+
+    // Load Products
+    db.collection('products').get().then(snapshot => {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = data.name;
+        productSelect.appendChild(option);
+      });
+    });
+
+    // Load Course Levels
+    db.collection('courseLevels').orderBy('name').get().then(snapshot => {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = data.name;
+        courseLevelSelect.appendChild(option);
+      });
+    });
+
   </script>
 </body>
 </html>
