@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Training QR Generator</title>
   
-<style>
+  <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f6f8;
@@ -66,8 +66,10 @@
     }
   </style>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
-<body Code Generator</h2>
+<body>
+  <h2>Training QR Code Generator</h2>
 
   <label for="company">Training Company</label>
   <select id="company">
@@ -93,8 +95,7 @@
   <label for="city">City</label>
   <input type="text" id="city" placeholder="e.g., Watertown" />
 
-  
-<label for="state">State/Province</label>
+  <label for="state">State/Province</label>
   <select id="state">
     <option value="">Select state or province</option>
     <!-- US States -->
@@ -161,7 +162,6 @@
     <option value="Saskatchewan">Saskatchewan</option>
   </select>
 
-
   <label for="level">Course Level</label>
   <select id="level">
     <option value="">Select level</option>
@@ -191,7 +191,7 @@
   </select>
 
   <div id="output-link"></div>
-  <img id="qr-code" alt="QR Code" />
+  <div id="qr-code"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
@@ -217,7 +217,7 @@
     const timeEl = document.getElementById("time");
     const levelEl = document.getElementById("level");
     const productEl = document.getElementById("product");
-    const qrImg = document.getElementById("qr-code");
+    const qrDiv = document.getElementById("qr-code");
     const outputLink = document.getElementById("output-link");
 
     let companiesCache = {};
@@ -270,7 +270,7 @@
       const product = productEl.value;
 
       if (!provider || !trainer || !city || !state || !time || !lvl || !product) {
-        qrImg.src = "";
+        qrDiv.innerHTML = "";
         outputLink.textContent = "";
         return;
       }
@@ -278,10 +278,15 @@
       const baseUrl = "https://www.boschheatingcooling.com/trf/";
       const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
       const fullURL = baseUrl + params;
-      const qrURL = `https://quickchart.io/qr?text=${encodeURIComponent(fullURL)}&size=300`;
 
       outputLink.innerHTML = `<strong>Prefilled URL:</strong><br><a href="${fullURL}" target="_blank">${fullURL}</a>`;
-      qrImg.src = qrURL;
+      
+      qrDiv.innerHTML = "";
+      new QRCode(qrDiv, {
+        text: fullURL,
+        width: 300,
+        height: 300
+      });
     }
 
     // Load companies on page load
