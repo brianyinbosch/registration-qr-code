@@ -69,6 +69,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+    <div class="logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Bosch-logo.svg/2560px-Bosch-logo.svg.png" alt="Bosch Home Comfort Logo" />
+  </div>
+
   <h2>Training QR Code Generator</h2>
 
   <label for="company">Training Company</label>
@@ -286,6 +290,8 @@
         text: fullURL,
         width: 300,
         height: 300
+        colorDark: "#005B28", // Bosch green
+        colorLight: "#ffffff"
       });
     }
 
