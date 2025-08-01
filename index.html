@@ -301,14 +301,22 @@
 
       outputLink.innerHTML = `<strong>Prefilled URL:</strong><br><a href="${fullURL}" target="_blank">${fullURL}</a>`;
       
-      qrDiv.innerHTML = "";
-      new QRCode(qrDiv, {
-        text: fullURL,
-        width: 300,
-        height: 300,
-        colorDark: "#00884a", // Bosch green
-        colorLight: "#ffffff"
-      });
+      while (qrDiv.firstChild) {
+  qrDiv.removeChild(qrDiv.firstChild);
+}
+
+try {
+  new QRCode(qrDiv, {
+    text: fullURL,
+    width: 300,
+    height: 300,
+    colorDark: "#00884a",
+    colorLight: "#ffffff"
+  });
+} catch (err) {
+  console.error("QR Code generation failed:", err);
+  qrDiv.innerHTML = `<p style="color:red">QR code failed to generate.</p>`;
+}
     }
 
     // Load companies on page load
