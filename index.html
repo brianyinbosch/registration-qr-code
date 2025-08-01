@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Training Attendance Registration</title>
@@ -301,22 +302,19 @@
 
       outputLink.innerHTML = `<strong>Prefilled URL:</strong><br><a href="${fullURL}" target="_blank">${fullURL}</a>`;
       
-      while (qrDiv.firstChild) {
-  qrDiv.removeChild(qrDiv.firstChild);
-}
+     while (qrDiv.firstChild) qrDiv.removeChild(qrDiv.firstChild);
 
-try {
-  new QRCode(qrDiv, {
-    text: fullURL,
-    width: 300,
-    height: 300,
-    colorDark: "#00884a",
-    colorLight: "#ffffff"
-  });
-} catch (err) {
-  console.error("QR Code generation failed:", err);
-  qrDiv.innerHTML = `<p style="color:red">QR code failed to generate.</p>`;
-}
+const canvas = document.createElement("canvas");
+qrDiv.appendChild(canvas);
+
+new QRious({
+  element: canvas,
+  value: fullURL,
+  size: 300,
+  background: 'white',
+  foreground: '#00884a'
+});
+
     }
 
     // Load companies on page load
