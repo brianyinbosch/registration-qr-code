@@ -297,21 +297,23 @@
                 const provider = companiesCache[providerId] || "";
                 const trainer = trainerEl.value;
                 const rawDate = dateEl.value;
-                let date = "";
-                if (rawDate) {
-                    const [year, month, day] = rawDate.split("-");
-                    date = `${month}-${day}-${year}`;
-                }
-
                 const city = cityEl.value;
                 const state = stateEl.value;
                 const time = timeEl.value;
                 const lvl = levelEl.value;
                 const product = productEl.value;
-                if (!provider || !trainer || !city || !state || !time || !lvl || !product) {
+                
+                if (!provider || !trainer || !rawDate || !city || !state || !time || !lvl || !product) {
                     qrDiv.innerHTML = "";
                     return;
                 }
+
+                let date = "";
+                if (rawDate) {
+                    const [year, month, day] = rawDate.split("-");
+                    date = `${month}-${day}-${year}`;
+                }
+                
                 const baseUrl = "https://www.boschheatingcooling.com/trf/";
                 const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingDate=${encodeURIComponent(date)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
                 const fullURL = baseUrl + params;
