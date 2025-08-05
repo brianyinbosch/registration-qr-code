@@ -1,347 +1,326 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Training Attendance Registration</title>
-  
-<style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f4f6f8;
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    background: white;
-  }
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Training Attendance Registration</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', sans-serif;
+                background-color: #f4f6f8;
+                max-width: 1000px;
+                margin: 2rem auto;
+                padding: 2rem;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                background: white;
+            }
 
-  .logo {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-  }
+            .logo {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 1.5rem;
+            }
 
-  .logo img {
-    max-width: 100%;
-    height: auto;
-    width: auto;
-    max-height: 100px;
-  }
+            .logo img {
+                max-width: 100%;
+                height: auto;
+                width: auto;
+                max-height: 100px;
+            }
 
-  h2, h3 {
-    text-align: center;
-    color: #2c3e50;
-  }
+            h2,
+            h3 {
+                text-align: center;
+                color: #2c3e50;
+            }
 
-  /* Main layout: form and QR side-by-side on large screens */
-  .main-layout {
-    display: grid;
-    grid-template-columns: 2fr 2fr;
-    gap: 2rem;
-    align-items: start;
-  }
+            /* Main layout: form and QR side-by-side on large screens */
+            .main-layout {
+                display: grid;
+                grid-template-columns: 2fr 3fr;
+                gap: 2rem;
+                align-items: start;
+            }
 
-  @media (max-width: 768px) {
-    .main-layout {
-      grid-template-columns: 1fr;
-    }
+            @media (max-width: 768px) {
+                .main-layout {
+                    grid-template-columns: 1fr;
+                }
 
-    .qr-section {
-      margin-top: 2rem;
-    }
-  }
+                .qr-section {
+                    margin-top: 2rem;
+                }
+            }
 
-  /* Form layout: 2-column grid for label + input */
-  .form-grid {
-    display: grid;
-    flex-direction: column;
-    gap: 1rem;
-  }
+            /* Form layout: 2-column grid for label + input */
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                column-gap: 1rem;
+                row-gap: 1rem;
+                align-items: center;
+            }
 
-  @media (max-width: 600px) {
-    .form-grid {
-      grid-template-columns: 1fr;
-    }
-  }
+            @media (max-width: 600px) {
+                .form-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
 
-  label {
-    font-weight: 600;
-    color: #34495e;
-  }
+            label {
+                font-weight: 600;
+                color: #34495e;
+            }
 
-  select,
-  input {
-    width: 100%;
-    padding: 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
+            select,
+            input {
+                width: 100%;
+                padding: 0.6rem;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 1rem;
+            }
 
-  select:focus,
-  input:focus {
-    border-color: #3498db;
-    outline: none;
-  }
+            select:focus,
+            input:focus {
+                border-color: #3498db;
+                outline: none;
+            }
 
-  /* QR section */
-  .qr-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+            /* QR section */
+            .qr-section {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
 
-  #qr-code {
-    margin-top: 1rem;
-  }
+            #qr-code {
+                margin-top: 1rem;
+            }
 
-  #qr-code canvas {
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-  }
-</style>
+            #qr-code canvas {
+                width: 100%;
+                max-width: 500px;
+                height: auto;
+            }
+        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    </head>
+    <body>
+        <div class="logo">
+            <img src="https://www.boschheatingcooling.com/hs-fs/hubfs/BHC%20House_2.jpeg?width=1328&height=305&name=BHC%20House_2.jpeg" alt="Bosch Home Comfort Logo" />
+        </div>
+        <h2 style="text-align: center;">Training Attendance Registration</h2>
+        <div class="main-layout">
+            <div class="form-grid">
+                <label for="company">Training Company</label>
+                <select id="company">
+                    <option value="">Select a company</option>
+                </select>
+                <label for="trainer">Trainer Name</label>
+                <select id="trainer">
+                    <option value="">Select a trainer</option>
+                </select>
+                <label for="date">Training Date</label>
+                <input type="date" id="date" />
+                <label for="time">Class Time (AM/PM/Full Day)</label>
+                <select id="time">
+                    <option value="">Select time</option>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                    <option value="Full Day">Full Day</option>
+                </select>
+                <label for="city">City</label>
+                <input type="text" id="city" placeholder="e.g., Watertown" />
+                <label for="state">State/Province</label>
+                <select id="state">
+                    <option value="">Select state or province</option>
+                    <!-- US States -->
+                    <option value="Alabama">Alabama</option>
+                    <option value="Alaska">Alaska</option>
+                    <option value="Arizona">Arizona</option>
+                    <option value="Arkansas">Arkansas</option>
+                    <option value="California">California</option>
+                    <option value="Colorado">Colorado</option>
+                    <option value="Connecticut">Connecticut</option>
+                    <option value="Delaware">Delaware</option>
+                    <option value="Florida">Florida</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Hawaii">Hawaii</option>
+                    <option value="Idaho">Idaho</option>
+                    <option value="Illinois">Illinois</option>
+                    <option value="Indiana">Indiana</option>
+                    <option value="Iowa">Iowa</option>
+                    <option value="Kansas">Kansas</option>
+                    <option value="Kentucky">Kentucky</option>
+                    <option value="Louisiana">Louisiana</option>
+                    <option value="Maine">Maine</option>
+                    <option value="Maryland">Maryland</option>
+                    <option value="Massachusetts">Massachusetts</option>
+                    <option value="Michigan">Michigan</option>
+                    <option value="Minnesota">Minnesota</option>
+                    <option value="Mississippi">Mississippi</option>
+                    <option value="Missouri">Missouri</option>
+                    <option value="Montana">Montana</option>
+                    <option value="Nebraska">Nebraska</option>
+                    <option value="Nevada">Nevada</option>
+                    <option value="New Hampshire">New Hampshire</option>
+                    <option value="New Jersey">New Jersey</option>
+                    <option value="New Mexico">New Mexico</option>
+                    <option value="New York">New York</option>
+                    <option value="North Carolina">North Carolina</option>
+                    <option value="North Dakota">North Dakota</option>
+                    <option value="Ohio">Ohio</option>
+                    <option value="Oklahoma">Oklahoma</option>
+                    <option value="Oregon">Oregon</option>
+                    <option value="Pennsylvania">Pennsylvania</option>
+                    <option value="Rhode Island">Rhode Island</option>
+                    <option value="South Carolina">South Carolina</option>
+                    <option value="South Dakota">South Dakota</option>
+                    <option value="Tennessee">Tennessee</option>
+                    <option value="Texas">Texas</option>
+                    <option value="Utah">Utah</option>
+                    <option value="Vermont">Vermont</option>
+                    <option value="Virginia">Virginia</option>
+                    <option value="Washington">Washington</option>
+                    <option value="West Virginia">West Virginia</option>
+                    <option value="Wisconsin">Wisconsin</option>
+                    <option value="Wyoming">Wyoming</option>
+                    <!-- Canadian Provinces -->
+                    <option value="Alberta">Alberta</option>
+                    <option value="British Columbia">British Columbia</option>
+                    <option value="Manitoba">Manitoba</option>
+                    <option value="New Brunswick">New Brunswick</option>
+                    <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
+                    <option value="Nova Scotia">Nova Scotia</option>
+                    <option value="Ontario">Ontario</option>
+                    <option value="Prince Edward Island">Prince Edward Island</option>
+                    <option value="Quebec">Quebec</option>
+                    <option value="Saskatchewan">Saskatchewan</option>
+                </select>
+                <label for="level">Course Level</label>
+                <select id="level">
+                    <option value="">Select level</option>
+                    <option value="100">100 - Introduction</option>
+                    <option value="200">200 - Intermediate</option>
+                    <option value="300">300 - Advanced</option>
+                    <option value="300-NATE">300-NATE - Advanced</option>
+                    <option value="400">400 - Expert</option>
+                    <option value="500">500 - Master</option>
+                </select>
+                <label for="product">Course Name</label>
+                <select id="product">
+                    <option value="">Select course</option>
+                    <option value="IDS-IDP">IDS-IDP</option>
+                    <option value="IDS">IDS</option>
+                    <option value="IDS Ultra">IDS Ultra</option>
+                    <option value="IDP">IDP</option>
+                    <option value="Mini-Split">Mini-Split</option>
+                    <option value="WSHP">WSHP</option>
+                    <option value="Boilers">Boilers</option>
+                    <option value="Water Heaters">Water Heaters</option>
+                    <option value="A2L Refrigerants">A2L Refrigerants</option>
+                    <option value="Technology-CCHP">Technology-CCHP</option>
+                    <option value="Technology-Inverter">Technology-Inverter</option>
+                    <option value="Johnstone Roadshow">Johnstone Roadshow</option>
+                </select>
+            </div>
+            <div class="qr-section">
+                <div id="qr-code"></div>
+            </div>
+        </div>
+        <script type="module">
+            import {
+                initializeApp
+            } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+            import {
+                getFirestore,
+                collection,
+                getDocs,
+                query,
+                where
+            } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+            const firebaseConfig = {
+                apiKey: "AIzaSyDQ5H1jO6XPDvIN5CoIvlFFta2lPGE4WIk",
+                authDomain: "training-qr-code.firebaseapp.com",
+                projectId: "training-qr-code",
+                storageBucket: "training-qr-code.firebasestorage.app",
+                messagingSenderId: "79832187763",
+                appId: "1:79832187763:web:86050298cbd1262faf3b06"
+            };
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const companyEl = document.getElementById("company");
+            const trainerEl = document.getElementById("trainer");
+            const dateEl = document.getElementById("date");
+            const cityEl = document.getElementById("city");
+            const stateEl = document.getElementById("state");
+            const timeEl = document.getElementById("time");
+            const levelEl = document.getElementById("level");
+            const productEl = document.getElementById("product");
+            const qrDiv = document.getElementById("qr-code");
+            let companiesCache = {};
+            async function loadCompanies() {
+                const companySnapshot = await getDocs(collection(db, "companies"));
+                companyEl.innerHTML = ' < option value = "" > Select a company < /option>';
+                companiesCache = {};
+                companySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    companiesCache[doc.id] = data.name;
+                    const option = document.createElement("option");
+                    option.value = doc.id;
+                    option.textContent = data.name;
+                    companyEl.appendChild(option);
+                });
+            }
+            companyEl.addEventListener("change", async () => {
+                trainerEl.innerHTML = ' < option value = "" > Select a trainer < /option>';
+                const selectedCompanyId = companyEl.value;
+                if (!selectedCompanyId) return;
+                const q = query(collection(db, "trainers"), where("company", "==", selectedCompanyId));
+                const trainerSnapshot = await getDocs(q);
+                trainerSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const option = document.createElement("option");
+                    option.value = data.name;
+                    option.textContent = data.name;
+                    trainerEl.appendChild(option);
+                });
+                updateOutput();
+            });
+            [trainerEl, dateEl, cityEl, stateEl, timeEl, levelEl, productEl].forEach(el => el.addEventListener("input", updateOutput));
 
-
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-</head>
-<body>
-    <div class="logo">
-    <img src="https://www.boschheatingcooling.com/hs-fs/hubfs/BHC%20House_2.jpeg?width=1328&height=305&name=BHC%20House_2.jpeg" alt="Bosch Home Comfort Logo" />
-  </div>
-
-  <h2 style="text-align: center;">Training Attendance Registration</h2>
-<div class = "main-layout">
-<div class = "form-grid">
-  <label for="company">Training Company</label>
-  <select id="company">
-    <option value="">Select a company</option>
-  </select>
-
-  <label for="trainer">Trainer Name</label>
-  <select id="trainer">
-    <option value="">Select a trainer</option>
-  </select>
-
-  <label for="date">Training Date</label>
-  <input type="date" id="date"/>
-
-  <label for="time">Class Time (AM/PM/Full Day)</label>
-  <select id="time">
-    <option value="">Select time</option>
-    <option value="AM">AM</option>
-    <option value="PM">PM</option>
-    <option value="Full Day">Full Day</option>
-  </select>
-
-  <label for="city">City</label>
-  <input type="text" id="city" placeholder="e.g., Watertown" />
-
-  <label for="state">State/Province</label>
-  <select id="state">
-    <option value="">Select state or province</option>
-    <!-- US States -->
-    <option value="Alabama">Alabama</option>
-    <option value="Alaska">Alaska</option>
-    <option value="Arizona">Arizona</option>
-    <option value="Arkansas">Arkansas</option>
-    <option value="California">California</option>
-    <option value="Colorado">Colorado</option>
-    <option value="Connecticut">Connecticut</option>
-    <option value="Delaware">Delaware</option>
-    <option value="Florida">Florida</option>
-    <option value="Georgia">Georgia</option>
-    <option value="Hawaii">Hawaii</option>
-    <option value="Idaho">Idaho</option>
-    <option value="Illinois">Illinois</option>
-    <option value="Indiana">Indiana</option>
-    <option value="Iowa">Iowa</option>
-    <option value="Kansas">Kansas</option>
-    <option value="Kentucky">Kentucky</option>
-    <option value="Louisiana">Louisiana</option>
-    <option value="Maine">Maine</option>
-    <option value="Maryland">Maryland</option>
-    <option value="Massachusetts">Massachusetts</option>
-    <option value="Michigan">Michigan</option>
-    <option value="Minnesota">Minnesota</option>
-    <option value="Mississippi">Mississippi</option>
-    <option value="Missouri">Missouri</option>
-    <option value="Montana">Montana</option>
-    <option value="Nebraska">Nebraska</option>
-    <option value="Nevada">Nevada</option>
-    <option value="New Hampshire">New Hampshire</option>
-    <option value="New Jersey">New Jersey</option>
-    <option value="New Mexico">New Mexico</option>
-    <option value="New York">New York</option>
-    <option value="North Carolina">North Carolina</option>
-    <option value="North Dakota">North Dakota</option>
-    <option value="Ohio">Ohio</option>
-    <option value="Oklahoma">Oklahoma</option>
-    <option value="Oregon">Oregon</option>
-    <option value="Pennsylvania">Pennsylvania</option>
-    <option value="Rhode Island">Rhode Island</option>
-    <option value="South Carolina">South Carolina</option>
-    <option value="South Dakota">South Dakota</option>
-    <option value="Tennessee">Tennessee</option>
-    <option value="Texas">Texas</option>
-    <option value="Utah">Utah</option>
-    <option value="Vermont">Vermont</option>
-    <option value="Virginia">Virginia</option>
-    <option value="Washington">Washington</option>
-    <option value="West Virginia">West Virginia</option>
-    <option value="Wisconsin">Wisconsin</option>
-    <option value="Wyoming">Wyoming</option>
-    <!-- Canadian Provinces -->
-    <option value="Alberta">Alberta</option>
-    <option value="British Columbia">British Columbia</option>
-    <option value="Manitoba">Manitoba</option>
-    <option value="New Brunswick">New Brunswick</option>
-    <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
-    <option value="Nova Scotia">Nova Scotia</option>
-    <option value="Ontario">Ontario</option>
-    <option value="Prince Edward Island">Prince Edward Island</option>
-    <option value="Quebec">Quebec</option>
-    <option value="Saskatchewan">Saskatchewan</option>
-  </select>
-
-  <label for="level">Course Level</label>
-  <select id="level">
-    <option value="">Select level</option>
-    <option value="100">100 - Introduction</option>
-    <option value="200">200 - Intermediate</option>
-    <option value="300">300 - Advanced</option>
-    <option value="300-NATE">300-NATE - Advanced</option>
-    <option value="400">400 - Expert</option>
-    <option value="500">500 - Master</option>
-  </select>
-
-  <label for="product">Course Name</label>
-  <select id="product">
-    <option value="">Select course</option>
-    <option value="IDS-IDP">IDS-IDP</option>
-    <option value="IDS">IDS</option>
-    <option value="IDS Ultra">IDS Ultra</option>
-    <option value="IDP">IDP</option>
-    <option value="Mini-Split">Mini-Split</option>
-    <option value="WSHP">WSHP</option>
-    <option value="Boilers">Boilers</option>
-    <option value="Water Heaters">Water Heaters</option>
-    <option value="A2L Refrigerants">A2L Refrigerants</option>
-    <option value="Technology-CCHP">Technology-CCHP</option>
-    <option value="Technology-Inverter">Technology-Inverter</option>
-    <option value="Johnstone Roadshow">Johnstone Roadshow</option>
-  </select>
-</div>
-  <div class = "qr-section">
-  <div id="qr-code"></div>
-  </div>
-</div>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-  apiKey: "AIzaSyDQ5H1jO6XPDvIN5CoIvlFFta2lPGE4WIk",
-  authDomain: "training-qr-code.firebaseapp.com",
-  projectId: "training-qr-code",
-  storageBucket: "training-qr-code.firebasestorage.app",
-  messagingSenderId: "79832187763",
-  appId: "1:79832187763:web:86050298cbd1262faf3b06"
-};
-
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const companyEl = document.getElementById("company");
-    const trainerEl = document.getElementById("trainer");
-    const dateEl = document.getElementById("date");
-    const cityEl = document.getElementById("city");
-    const stateEl = document.getElementById("state");
-    const timeEl = document.getElementById("time");
-    const levelEl = document.getElementById("level");
-    const productEl = document.getElementById("product");
-    const qrDiv = document.getElementById("qr-code");
-
-    let companiesCache = {};
-
-    async function loadCompanies() {
-      const companySnapshot = await getDocs(collection(db, "companies"));
-      companyEl.innerHTML = '<option value="">Select a company</option>';
-      companiesCache = {};
-      companySnapshot.forEach(doc => {
-        const data = doc.data();
-        companiesCache[doc.id] = data.name;
-        const option = document.createElement("option");
-        option.value = doc.id;
-        option.textContent = data.name;
-        companyEl.appendChild(option);
-      });
-    }
-
-    companyEl.addEventListener("change", async () => {
-      trainerEl.innerHTML = '<option value="">Select a trainer</option>';
-      const selectedCompanyId = companyEl.value;
-      if (!selectedCompanyId) return;
-
-      const q = query(collection(db, "trainers"), where("company", "==", selectedCompanyId));
-      const trainerSnapshot = await getDocs(q);
-
-      trainerSnapshot.forEach(doc => {
-        const data = doc.data();
-        const option = document.createElement("option");
-        option.value = data.name;
-        option.textContent = data.name;
-        trainerEl.appendChild(option);
-      });
-
-      updateOutput();
-    });
-
-    [trainerEl, dateEl, cityEl, stateEl, timeEl, levelEl, productEl].forEach(el =>
-      el.addEventListener("input", updateOutput)
-    );
-
-    function updateOutput() {
-      const providerId = companyEl.value;
-      const provider = companiesCache[providerId] || "";
-      const trainer = trainerEl.value;
-      const city = cityEl.value;
-      const state = stateEl.value;
-      const time = timeEl.value;
-      const lvl = levelEl.value;
-      const product = productEl.value;
-
-      if (!provider || !trainer || !city || !state || !time || !lvl || !product) {
-        qrDiv.innerHTML = "";
-        return;
-      }
-
-      const baseUrl = "https://www.boschheatingcooling.com/trf/";
-      const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
-      const fullURL = baseUrl + params;
-      
-     while (qrDiv.firstChild) qrDiv.removeChild(qrDiv.firstChild);
-
-const canvas = document.createElement("canvas");
-qrDiv.appendChild(canvas);
-
-new QRious({
-  element: canvas,
-  value: fullURL,
-  size: 500,
-  background: 'white',
-  foreground: '#00884a'
-});
-
-    }
-
-    // Load companies on page load
-    loadCompanies();
-  </script>
-</body>
+            function updateOutput() {
+                const providerId = companyEl.value;
+                const provider = companiesCache[providerId] || "";
+                const trainer = trainerEl.value;
+                const city = cityEl.value;
+                const state = stateEl.value;
+                const time = timeEl.value;
+                const lvl = levelEl.value;
+                const product = productEl.value;
+                if (!provider || !trainer || !city || !state || !time || !lvl || !product) {
+                    qrDiv.innerHTML = "";
+                    return;
+                }
+                const baseUrl = "https://www.boschheatingcooling.com/trf/";
+                const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
+                const fullURL = baseUrl + params;
+                while (qrDiv.firstChild) qrDiv.removeChild(qrDiv.firstChild);
+                const canvas = document.createElement("canvas");
+                qrDiv.appendChild(canvas);
+                new QRious({
+                    element: canvas,
+                    value: fullURL,
+                    size: 500,
+                    background: 'white',
+                    foreground: '#00884a'
+                });
+            }
+            // Load companies on page load
+            loadCompanies();
+        </script>
+    </body>
 </html>
