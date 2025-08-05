@@ -39,7 +39,7 @@
   /* Main layout: form and QR side-by-side on large screens */
   .main-layout {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 2fr 1.5fr;
     gap: 2rem;
     align-items: start;
   }
@@ -102,7 +102,7 @@
 
   #qr-code canvas {
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     height: auto;
   }
 </style>
@@ -335,7 +335,7 @@ qrDiv.appendChild(canvas);
 new QRious({
   element: canvas,
   value: fullURL,
-  size: 400,
+  size: 500,
   background: 'white',
   foreground: '#00884a'
 });
