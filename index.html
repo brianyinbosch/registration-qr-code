@@ -105,21 +105,6 @@
     max-width: 400px;
     height: auto;
   }
-
-  #output-link {
-    margin-top: 1rem;
-    word-break: break-word;
-    text-align: center;
-  }
-
-  #output-link a {
-    color: #2980b9;
-    text-decoration: none;
-  }
-
-  #output-link a:hover {
-    text-decoration: underline;
-  }
 </style>
 
 
@@ -254,7 +239,6 @@
   </select>
 </div>
   <div class = "qr-section">
-  <div id="output-link"></div>
   <div id="qr-code"></div>
   </div>
 </div>
@@ -284,7 +268,6 @@
     const levelEl = document.getElementById("level");
     const productEl = document.getElementById("product");
     const qrDiv = document.getElementById("qr-code");
-    const outputLink = document.getElementById("output-link");
 
     let companiesCache = {};
 
@@ -337,15 +320,12 @@
 
       if (!provider || !trainer || !city || !state || !time || !lvl || !product) {
         qrDiv.innerHTML = "";
-        outputLink.textContent = "";
         return;
       }
 
       const baseUrl = "https://www.boschheatingcooling.com/trf/";
       const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
       const fullURL = baseUrl + params;
-
-      outputLink.innerHTML = `<strong>Prefilled URL:</strong><br><a href="${fullURL}" target="_blank">${fullURL}</a>`;
       
      while (qrDiv.firstChild) qrDiv.removeChild(qrDiv.firstChild);
 
