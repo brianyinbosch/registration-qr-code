@@ -296,6 +296,7 @@
                 const providerId = companyEl.value;
                 const provider = companiesCache[providerId] || "";
                 const trainer = trainerEl.value;
+                const date = dateEl.value;
                 const city = cityEl.value;
                 const state = stateEl.value;
                 const time = timeEl.value;
@@ -306,7 +307,7 @@
                     return;
                 }
                 const baseUrl = "https://www.boschheatingcooling.com/trf/";
-                const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
+                const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingDate=${encodeURIComponent(date)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
                 const fullURL = baseUrl + params;
                 while (qrDiv.firstChild) qrDiv.removeChild(qrDiv.firstChild);
                 const canvas = document.createElement("canvas");
