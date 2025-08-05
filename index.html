@@ -10,7 +10,7 @@
   body {
     font-family: 'Segoe UI', sans-serif;
     background-color: #f4f6f8;
-    max-width: 700px;
+    max-width: 1000px;
     margin: 2rem auto;
     padding: 2rem;
     border-radius: 8px;
@@ -36,6 +36,25 @@
     color: #2c3e50;
   }
 
+  /* Main layout: form and QR side-by-side on large screens */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) {
+    .main-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .qr-section {
+      margin-top: 2rem;
+    }
+  }
+
+  /* Form layout: 2-column grid for label + input */
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -55,7 +74,8 @@
     color: #34495e;
   }
 
-  select, input {
+  select,
+  input {
     width: 100%;
     padding: 0.6rem;
     border: 1px solid #ccc;
@@ -63,22 +83,27 @@
     font-size: 1rem;
   }
 
-  select:focus, input:focus {
+  select:focus,
+  input:focus {
     border-color: #3498db;
     outline: none;
   }
 
-  #qr-code {
+  /* QR section */
+  .qr-section {
     display: flex;
-    justify-content: center;
-    margin-top: 2rem;
+    flex-direction: column;
+    align-items: center;
   }
 
-  img {
-    display: block;
-    margin: 2rem auto;
-    width: 300px;
-    height: 300px;
+  #qr-code {
+    margin-top: 1rem;
+  }
+
+  #qr-code canvas {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
   }
 
   #output-link {
@@ -98,6 +123,7 @@
 </style>
 
 
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
@@ -106,7 +132,7 @@
   </div>
 
   <h2 style="text-align: center;">Training Attendance Registration</h2>
-
+<div class = "main-layout">
 <div class = "form-grid">
   <label for="company">Training Company</label>
   <select id="company">
@@ -227,10 +253,11 @@
     <option value="Johnstone Roadshow">Johnstone Roadshow</option>
   </select>
 </div>
-
+  <div class = "qr-section">
   <div id="output-link"></div>
   <div id="qr-code"></div>
-
+  </div>
+</div>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
     import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
