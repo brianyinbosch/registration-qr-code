@@ -296,7 +296,13 @@
                 const providerId = companyEl.value;
                 const provider = companiesCache[providerId] || "";
                 const trainer = trainerEl.value;
-                const date = dateEl.value;
+                const rawDate = dateEl.value;
+                let date = "";
+                if (rawDate) {
+                    const [year, month, day] = rawDate.split("-");
+                    date = `${month}-${day}-${year}`;
+                }
+
                 const city = cityEl.value;
                 const state = stateEl.value;
                 const time = timeEl.value;
