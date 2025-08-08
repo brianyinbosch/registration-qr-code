@@ -279,7 +279,7 @@
 }
 
             companyEl.addEventListener("change", async () => {
-                trainerEl.innerHTML = ' < option value = "" > Select a trainer < /option>';
+                trainerEl.innerHTML = '<option value = ""> Select a trainer </option>';
                 const selectedCompanyId = companyEl.value;
                 if (!selectedCompanyId) return;
                 const q = query(collection(db, "trainers"), where("company", "==", selectedCompanyId));
