@@ -264,7 +264,7 @@
             let companiesCache = {};
             async function loadCompanies() {
                 const companySnapshot = await getDocs(collection(db, "companies"));
-                companyEl.innerHTML = ' < option value = "" > Select a company < /option>';
+                companyEl.innerHTML = ' <option value = ""> Select a company </option>';
                 companiesCache = {};
                 let firstCompanyId = null;
                 companySnapshot.forEach(doc => {
@@ -276,6 +276,7 @@
                     companyEl.appendChild(option);
                     if (!firstCompanyId) firstCompanyId = doc.id;
                 });
+            }
             }
             companyEl.addEventListener("change", async () => {
                 trainerEl.innerHTML = ' < option value = "" > Select a trainer < /option>';
