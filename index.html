@@ -262,22 +262,22 @@
             const productEl = document.getElementById("product");
             const qrDiv = document.getElementById("qr-code");
             let companiesCache = {};
-            async function loadCompanies() {
-                const companySnapshot = await getDocs(collection(db, "companies"));
-                companyEl.innerHTML = ' <option value = ""> Select a company </option>';
-                companiesCache = {};
-                let firstCompanyId = null;
-                companySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    companiesCache[doc.id] = data.name;
-                    const option = document.createElement("option");
-                    option.value = doc.id;
-                    option.textContent = data.name;
-                    companyEl.appendChild(option);
-                    if (!firstCompanyId) firstCompanyId = doc.id;
-                });
-            }
-            }
+           async function loadCompanies() {
+    const companySnapshot = await getDocs(collection(db, "companies"));
+    companyEl.innerHTML = '<option value="">Select a company</option>';
+    companiesCache = {};
+
+    companySnapshot.forEach(doc => {
+        const data = doc.data();
+        companiesCache[doc.id] = data.name;
+
+        const option = document.createElement("option");
+        option.value = doc.id;
+        option.textContent = data.name;
+        companyEl.appendChild(option);
+    });
+}
+
             companyEl.addEventListener("change", async () => {
                 trainerEl.innerHTML = ' < option value = "" > Select a trainer < /option>';
                 const selectedCompanyId = companyEl.value;
