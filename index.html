@@ -266,6 +266,7 @@
                 const companySnapshot = await getDocs(collection(db, "companies"));
                 companyEl.innerHTML = ' < option value = "" > Select a company < /option>';
                 companiesCache = {};
+                let firstCompanyId = null;
                 companySnapshot.forEach(doc => {
                     const data = doc.data();
                     companiesCache[doc.id] = data.name;
@@ -273,6 +274,7 @@
                     option.value = doc.id;
                     option.textContent = data.name;
                     companyEl.appendChild(option);
+                    if (!firstCompanyId) firstCompanyId = doc.id;
                 });
             }
             companyEl.addEventListener("change", async () => {
@@ -302,18 +304,15 @@
                 const time = timeEl.value;
                 const lvl = levelEl.value;
                 const product = productEl.value;
-                
                 if (!provider || !trainer || !rawDate || !city || !state || !time || !lvl || !product) {
                     qrDiv.innerHTML = "";
                     return;
                 }
-
                 let date = "";
                 if (rawDate) {
                     const [year, month, day] = rawDate.split("-");
                     date = `${month}-${day}-${year}`;
                 }
-                
                 const baseUrl = "https://www.boschheatingcooling.com/trf/";
                 const params = `?provider=${encodeURIComponent(provider)}&trainer=${encodeURIComponent(trainer)}&trainingDate=${encodeURIComponent(date)}&trainingCity=${encodeURIComponent(city)}&trainingState=${encodeURIComponent(state)}&product=${encodeURIComponent(product)}&lvl=${encodeURIComponent(lvl)}&classTime=${time}`;
                 const fullURL = baseUrl + params;
